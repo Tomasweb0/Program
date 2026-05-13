@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Knihovna</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family:Arial;
+    background:#0f172a;
+    color:white;
+}
+
+header{
+    background:#111827;
+    padding:20px;
+    text-align:center;
+}
+
+header h1{
+    color:#facc15;
+    font-size:40px;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+.admin-btn{
+    background:red;
+    color:white;
+}
+
+.books{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+    padding:20px;
+}
+
+.book{
+    background:#1e293b;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 0 10px black;
+}
+
+.book img{
+    width:100%;
+    height:300px;
+    object-fit:cover;
+}
+
+.book-content{
+    padding:15px;
+}
+
+.book h2{
+    color:#facc15;
+}
+
+.read-btn{
+    width:100%;
+    margin-top:10px;
+    background:#2563eb;
+    color:white;
+}
+
+#adminPanel{
+    display:none;
+    background:#111827;
+    margin:20px;
+    padding:20px;
+    border-radius:20px;
+}
+
+input, textarea{
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+}
+
+textarea{
+    height:200px;
+    resize:none;
+}
+
+.add-btn{
+    margin-top:15px;
+    background:#16a34a;
+    color:white;
+    width:100%;
+}
+
+#reader{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#020617;
+    overflow:auto;
+    padding:40px;
+    z-index:999;
+}
+
+#readerContent{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    color:black;
+    padding:40px;
+    border-radius:20px;
+    line-height:1.8;
+    font-size:20px;
+}
+
+.close-reader{
+    position:fixed;
+    top:20px;
+    right:20px;
+    background:red;
+    color:white;
+}
+
+</style>
+</head>
+<body>
+
+<header>
+    <h1>📚 Online Knihovna</h1>
+    <button class="admin-btn" onclick="openAdmin()">
+        Admin Panel
+    </button>
+</header>
+
+<div class="books" id="booksContainer">
+
+</div>
+
+<div id="adminPanel">
+
+    <h2>➕ Přidat Knihu</h2>
+
+    <input type="text" id="title" placeholder="Název knihy">
+
+    <input type="text" id="image" placeholder="URL obrázku">
+
+    <textarea id="text" placeholder="Napiš celou knihu sem..."></textarea>
+
+    <button class="add-btn" onclick="addBook()">
+        Přidat Knihu
+    </button>
+
+</div>
+
+<div id="reader">
+
+    <button class="close-reader" onclick="closeReader()">
+        Zavřít
+    </button>
+
+    <div id="readerContent">
+
+    </div>
+
+</div>
+
+<script>
+
+let books = [];
+
+function openAdmin(){
+
+    let code = prompt("Zadej admin kód:");
+
+    if(code === "1515"){
+        document.getElementById("adminPanel").style.display = "block";
+    }else{
+        alert("Špatný kód.");
+    }
+
+}
+
+function addBook(){
+
+    let title = document.getElementById("title").value;
+    let image = document.getElementById("image").value;
+    let text = document.getElementById("text").value;
+
+    if(title === "" || image === "" || text === ""){
+        alert("Vyplň všechna pole.");
+        return;
+    }
+
+    let book = {
+        title,
+        image,
+        text
+    };
+
+    books.push(book);
+
+    renderBooks();
+
+    document.getElementById("title").value = "";
+    document.getElementById("image").value = "";
+    document.getElementById("text").value = "";
+
+}
+
+function renderBooks(){
+
+    let container = document.getElementById("booksContainer");
+
+    container.innerHTML = "";
+
+    books.forEach((book,index)=>{
+
+        container.innerHTML += `
+        
+        <div class="book">
+
+            <img src="${book.image}">
+
+            <div class="book-content">
+
+                <h2>${book.title}</h2>
+
+                <button class="read-btn" onclick="readBook(${index})">
+                    Číst Knihu
+                </button>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+function readBook(index){
+
+    document.getElementById("reader").style.display = "block";
+
+    document.getElementById("readerContent").innerHTML = `
+    
+        <h1>${books[index].title}</h1>
+        <hr>
+        <p>${books[index].text.replace(/\n/g,"<br><br>")}</p>
+
+    `;
+
+}
+
+function closeReader(){
+
+    document.getElementById("reader").style.display = "none";
+
+}
+
+books.push({
+    title:"Harry Potter",
+    image:"https://picsum.photos/400/600?1",
+    text:`Byl jednou jeden mladý čaroděj jménem Harry Potter.
+
+Žil pod schody u své tety a strýce.
+
+Jednoho dne přišel dopis z Bradavic...
+
+A začalo největší dobrodružství jeho života.
+
+Tato kniha pokračuje dál a dál...
+
+Můžeš sem napsat opravdu dlouhou knihu.`
+});
+
+books.push({
+    title:"Dobrodružství v lese",
+    image:"https://picsum.photos/400/600?2",
+    text:`Jednoho dne se skupina přátel vydala do temného lesa.
+
+Nikdo netušil, co tam najdou.
+
+Najednou uslyšeli zvláštní zvuky...
+
+A příběh pokračuje dál.`
+});
+
+renderBooks();
+
+</script>
+
+</body>
+</html>
